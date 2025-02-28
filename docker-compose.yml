@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  webserver1:
+    image: my-website
+    container_name: webserver1
+    ports:
+      - "8081:80"
+
+  webserver2:
+    image: my-website
+    container_name: webserver2
+    ports:
+      - "8082:80"
+
