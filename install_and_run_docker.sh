@@ -66,6 +66,6 @@ sudo docker stop $CONTAINER_NAME &> /dev/null || echo "No existing container to 
 sudo docker rm $CONTAINER_NAME &> /dev/null || echo "No existing container to remove."
 
 echo "Running Docker container..."
-sudo docker run -d --name $CONTAINER_NAME -p 8080:8080 $IMAGE_NAME || handle_error "Failed to run Docker container."
+sudo docker run -d --name $CONTAINER_NAME -p 8081:8080 $IMAGE_NAME || handle_error "Failed to run Docker container."
 
 echo "Docker container is running successfully!"
