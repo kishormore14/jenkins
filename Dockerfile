@@ -13,7 +13,7 @@ RUN npm install
 COPY . .
 
 # Build Angular application
-RUN npm run build --prod
+RUN ng build --configuration production
 
 # Nginx to serve the build
 FROM nginx:1.21-alpine
