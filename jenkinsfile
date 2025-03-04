@@ -1,31 +1,37 @@
 pipeline {
     agent any
+
     stages {
         stage('Clone Repository') {
             steps {
-                git 'https://github.com/kishormore14/jenkins'  // Replace with your repo
+                git 'https://github.com/kishormore14/jenkins.git'
             }
         }
+        
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t my-website .'
+                sh '''
+                echo "Building Docker Image..."
+                docker build -t my-nginx-app .
+                '''
             }
         }
-        stage('Stop Old Containers') {
+
+        stage('Deploy to AWS EC2') {
             steps {
-                script {
-                    def containers = ['webserver1', 'webserver2']
-                    containers.each { c ->
-                        sh "docker ps -q --filter name=${c} | xargs --no-run-if-empty docker stop"
-                        sh "docker ps -a -q --filter name=${c} | xargs --no-run-if-empty docker rm"
-                    }
-                }
-            }
-        }
-        stage('Run New Containers') {
-            steps {
-                sh 'docker-compose down || true'   // Stop old containers
-                sh 'docker-compose up -d'         // Run new containers
+                sh '''
+                echo "Copying files to EC2..."
+                scp -i "C:/Users/MIPL0027/Downloads/AWS/WebHostTest.pem" -r * ec2-user@ec2-43-205-117-255.ap-south-1.compute.amazonaws.com:/home/ec2-user/
+
+                echo "Deploying on EC2..."
+                ssh -i "C:/Users/MIPL0027/Downloads/AWS/WebHostTest.pem" ec2-user@ec2-43-205-117-255.ap-south-1.compute.amazonaws.com <<EOF
+                cd /home/ec2-user/
+                docker stop my-nginx-app || true
+                docker rm my-nginx-app || true
+                docker build -t my-nginx-app .
+                docker run -d -p 80:80 --name my-nginx-app my-nginx-app
+                EOF
+                '''
             }
         }
     }
